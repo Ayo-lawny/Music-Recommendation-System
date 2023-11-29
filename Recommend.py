@@ -12,20 +12,22 @@ client_manager = SpotifyClientCredentials(client_id=CLIENT_ID, client_secret=CLI
 sp = spotipy.Spotify(client_credentials_manager=client_manager)
 
 def get_song_album_cover_url(song_name, artist_name):
-    search_query = f"track:{song_name} track_name:{artist_name}"
+    search_query = f"track:{song_name} artist:{artist_name}"  # Update the search query format
     results = sp.search(q=search_query, type="track")
+
+    print("Search query:", search_query)  # Add this line to check the search query
 
     if results and results["tracks"]["items"]:
         track = results["tracks"]["items"][0]
         album_cover_url = track["album"]["images"][0]["url"]
-        print(album_cover_url)
+        print("Album cover URL:", album_cover_url)  # Check the album cover URL
         return album_cover_url
     else:
         return "https://i.postimg.cc/0QNxYz4V/social.png"
 
 def recommend(song):
     index = df[df['track_name'] == song].index[0]
-    distances = sorted(list(enumerate(similarity[index])), reverse=True, key=lambda x: x[1])
+    distances = sorted(list(enumerate(similar[index])), reverse=True, key=lambda x: x[1])
     recommended_music_names = []
     recommended_music_posters = []
     for i in distances[1:6]:
@@ -45,7 +47,11 @@ st.markdown("<h1 style = 'color: #000000; text-align: center;font-family: Arial,
 st.markdown("<h3 style = 'margin: -25px; color: #000000; text-align: center;font-family: Arial, Helvetica, sans-serif; '> Created by Ayodeji</h3>", unsafe_allow_html= True)
 
 df = pd.read_pickle("df.pkl") 
-similarity = pd.read_pickle('similar.pkl')
+from sklearn.feature_extraction.text import CountVectorizer
+cv = CountVectorizer(max_features = 2000)
+vectors = cv.fit_transform(df['tags']).toarray()
+from sklearn.metrics.pairwise import cosine_similarity
+similar = cosine_similarity(vectors)
 
 music_list = df['track_name'].values
 select_music = st.selectbox(
