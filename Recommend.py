@@ -23,7 +23,7 @@ def get_song_album_cover_url(song_name, artist_name):
         print("Album cover URL:", album_cover_url)  # Check the album cover URL
         return album_cover_url
     else:
-        return "https://i.postimg.cc/0QNxYz4V/social.png"
+        return "https://w7.pngwing.com/pngs/392/305/png-transparent-spotify-music-playlist-streaming-media-social-network-miscellaneous-hand-logo.png"
 
 def recommend(song):
     index = df[df['track_name'] == song].index[0]
